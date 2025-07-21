@@ -1,81 +1,66 @@
--- Drop existing tables to start fresh
-DROP TABLE IF EXISTS products, buyers, vendors, invoices, invoice_items;
 
--- Create Products Table
+-- Drop tables if they exist to start fresh
+DROP TABLE IF EXISTS invoice_items;
+DROP TABLE IF EXISTS invoices;
+DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS buyers;
+DROP TABLE IF EXISTS vendors;
+
+-- Create products table
 CREATE TABLE products (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    sku VARCHAR(100),
-    quantity INT DEFAULT 0,
-    price NUMERIC(10, 2) DEFAULT 0.00
+    sku VARCHAR(100) UNIQUE,
+    quantity INTEGER NOT NULL DEFAULT 0,
+    price NUMERIC(10, 2) NOT NULL
 );
 
--- Create Buyers Table
+-- Create buyers table
 CREATE TABLE buyers (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
     address TEXT,
-    due NUMERIC(10, 2) DEFAULT 0.00
+    due NUMERIC(10, 2) DEFAULT 0
 );
 
--- Create Vendors Table
+-- Create vendors table
 CREATE TABLE vendors (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    phone VARCHAR(20)
+    phone VARCHAR(20),
+    company VARCHAR(255)
 );
 
--- Create Invoices Table
+-- Create invoices table
 CREATE TABLE invoices (
     id SERIAL PRIMARY KEY,
-    buyer VARCHAR(255),
-    date DATE NOT NULL,
-    total NUMERIC(10, 2) DEFAULT 0.00,
-    due NUMERIC(10, 2) DEFAULT 0.00
+    buyer_id INTEGER REFERENCES buyers(id),
+    date DATE NOT NULL DEFAULT CURRENT_DATE,
+    total NUMERIC(10, 2) NOT NULL,
+    due NUMERIC(10, 2) NOT NULL
 );
 
--- Create Invoice Items Table (for relating products to invoices)
+-- Create invoice_items table
 CREATE TABLE invoice_items (
     id SERIAL PRIMARY KEY,
-    invoice_id INT REFERENCES invoices(id),
-    product_id INT REFERENCES products(id),
-    quantity INT,
-    rate NUMERIC(10, 2)
+    invoice_id INTEGER REFERENCES invoices(id) ON DELETE CASCADE,
+    product_id INTEGER REFERENCES products(id),
+    quantity INTEGER NOT NULL,
+    rate NUMERIC(10, 2) NOT NULL
 );
 
-
--- Insert Mock Data
-
--- Mock Products
+-- Insert some sample data
 INSERT INTO products (name, sku, quantity, price) VALUES
-('1/2" Steel Pipe', 'SKU001', 100, 15.50),
-('3/4" PVC Elbow', 'SKU002', 250, 1.25),
-('Wrench Set', 'SKU003', 50, 75.00),
-('Hammer', 'SKU004', 80, 22.99),
-('Drill Machine', 'SKU005', 30, 120.00);
+('Welding Rod', 'WR-001', 100, 5.00),
+('Grinding Disc', 'GD-002', 50, 12.50),
+('Drill Bit Set', 'DBS-003', 20, 25.00),
+('Safety Goggles', 'SG-004', 75, 8.75);
 
--- Mock Buyers
 INSERT INTO buyers (name, phone, address, due) VALUES
-('Abdur Rahim', '01711111111', 'Dhaka, Bangladesh', 1500.00),
-('Kamal Hossain', '01822222222', 'Chittagong, Bangladesh', 0.00),
-('Fatima Begum', '01933333333', 'Sylhet, Bangladesh', 550.75);
+('John Doe Construction', '123-456-7890', '123 Main St, Anytown', 150.00),
+('Jane Smith Services', '098-765-4321', '456 Oak Ave, Otherville', 0.00);
 
--- Mock Vendors
-INSERT INTO vendors (name, phone) VALUES
-('National Pipes Ltd.', '01555555555'),
-('Modern Hardware Supply', '01666666666');
-
--- Mock Invoices
-INSERT INTO invoices (buyer, date, total, due) VALUES
-('Abdur Rahim', '2023-10-15', 3500.00, 1500.00),
-('Kamal Hossain', '2023-10-20', 1250.50, 0.00),
-('Abdur Rahim', '2023-10-25', 800.00, 0.00);
-
--- Note: Mock data for invoice_items is not included to keep it simple,
--- but the table is ready for future development.
-
--- Grant all privileges on all tables in the public schema to the default user.
--- The user is determined by the POSTGRES_USER env var.
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "user";
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO "user";
+INSERT INTO vendors (name, phone, company) VALUES
+('Global Metal Supply', '555-111-2222', 'Global Metal Inc.'),
+('Tools & More Co.', '555-333-4444', 'Tools & More');

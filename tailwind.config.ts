@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -13,6 +14,10 @@ export default {
         body: ['Inter', 'sans-serif'],
         headline: ['Inter', 'sans-serif'],
         code: ['monospace'],
+      },
+       boxShadow: {
+        'neumorphic-outset': '5px 5px 10px #d0d0d0, -5px -5px 10px #ffffff',
+        'neumorphic-inset': 'inset 5px 5px 10px #d0d0d0, inset -5px -5px 10px #ffffff',
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -88,10 +93,15 @@ export default {
             height: '0',
           },
         },
+        'liquid-press': {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(0.92) rotate(-2deg)' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'liquid-press': 'liquid-press 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards',
       },
     },
   },
